@@ -1,0 +1,4 @@
+*.xml
+Debug/
+.metadata
+.launch

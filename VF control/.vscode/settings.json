@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "throttle_mapping.h": "c",
+        "main.h": "c",
+        "speed_sensing.h": "c",
+        "safety_and_cutoffs.h": "c",
+        "fdcan.h": "c",
+        "angle_calibration.h": "c"
+    },
+    "stm32-for-vscode.makePath": "c:\\Users\\Pratik TRN0094\\AppData\\Roaming\\Code\\User\\globalStorage\\bmd.stm32-for-vscode\\@xpack-dev-tools\\windows-build-tools\\4.4.0-1.1\\.content\\bin\\make.EXE"
+}
