@@ -44,6 +44,7 @@ extern "C" {
 #include "Speed_Sensing.h"
 #include "Regen_Manager.h"
 #include "Angle_calibration.h"
+#include "VF_method.h"
 #include <string.h>
 /* USER CODE END Includes */
 

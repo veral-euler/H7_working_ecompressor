@@ -218,7 +218,7 @@ int main(void)
   // Initial_Fault_Check();
 
   // FOC_initialize();
-  Angle_calibration_initialize();
+  VF_method_initialize();
 
   // Regen_Init();
 
@@ -1195,14 +1195,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     #endif
 		
     // FOC_step0();
-    Angle_calibration_step();
+    VF_method_step();
 		/**************************************************************/
 
 		/**************************************************************/
 		/* Calculating the duty cycles and finally setting the registers in TIM1 */
-		FOC_Out.pwm_a = (uint16_t)(1250 *(Angle_calibration_Y.V_abc[0] / (Angle_calibration_U.V_up_limit))  + 1250);
-		FOC_Out.pwm_b = (uint16_t)(1250 *(Angle_calibration_Y.V_abc[1] / (Angle_calibration_U.V_up_limit))  + 1250);
-		FOC_Out.pwm_c = (uint16_t)(1250 *(Angle_calibration_Y.V_abc[2] / (Angle_calibration_U.V_up_limit))  + 1250);
+		FOC_Out.pwm_a = (uint16_t)(1250 *(VF_method_Y.V_abc[0] / (VF_method_U.V_up_limit))  + 1250);
+		FOC_Out.pwm_b = (uint16_t)(1250 *(VF_method_Y.V_abc[1] / (VF_method_U.V_up_limit))  + 1250);
+		FOC_Out.pwm_c = (uint16_t)(1250 *(VF_method_Y.V_abc[2] / (VF_method_U.V_up_limit))  + 1250);
 
 		if (FOC_Out.pwm_a <= 110)
 			FOC_Out.pwm_a = 110;
