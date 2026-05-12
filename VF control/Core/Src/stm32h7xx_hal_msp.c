@@ -62,7 +62,7 @@ extern DMA_HandleTypeDef hdma_adc2;
 /* USER CODE END 0 */
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
-                    /**
+                                                            /**
   * Initializes the Global MSP.
   */
 void HAL_MspInit(void)
@@ -167,18 +167,20 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     /**ADC2 GPIO Configuration
+    PA2     ------> ADC2_INP14
     PA3     ------> ADC2_INP15
+    PA7     ------> ADC2_INP7
     PC4     ------> ADC2_INP4
     PC5     ------> ADC2_INP8
     PB0     ------> ADC2_INP9
     PB1     ------> ADC2_INP5
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_3;
+    GPIO_InitStruct.Pin = LS_CURRENT_SENSE_MCU_Pin|GPIO_PIN_3|HEATER_TEMP_SENSE_MCU_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5;
+    GPIO_InitStruct.Pin = GPIO_PIN_4|PCB_TEMP_SENSE_MCU_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -274,15 +276,17 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     }
 
     /**ADC2 GPIO Configuration
+    PA2     ------> ADC2_INP14
     PA3     ------> ADC2_INP15
+    PA7     ------> ADC2_INP7
     PC4     ------> ADC2_INP4
     PC5     ------> ADC2_INP8
     PB0     ------> ADC2_INP9
     PB1     ------> ADC2_INP5
     */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_3);
+    HAL_GPIO_DeInit(GPIOA, LS_CURRENT_SENSE_MCU_Pin|GPIO_PIN_3|HEATER_TEMP_SENSE_MCU_Pin);
 
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_4|GPIO_PIN_5);
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_4|PCB_TEMP_SENSE_MCU_Pin);
 
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_0|GPIO_PIN_1);
 
@@ -413,6 +417,17 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
 
     /* USER CODE END TIM1_MspInit 1 */
   }
+  else if(htim_base->Instance==TIM3)
+  {
+    /* USER CODE BEGIN TIM3_MspInit 0 */
+
+    /* USER CODE END TIM3_MspInit 0 */
+    /* Peripheral clock enable */
+    __HAL_RCC_TIM3_CLK_ENABLE();
+    /* USER CODE BEGIN TIM3_MspInit 1 */
+
+    /* USER CODE END TIM3_MspInit 1 */
+  }
   else if(htim_base->Instance==TIM5)
   {
     /* USER CODE BEGIN TIM5_MspInit 0 */
@@ -438,6 +453,17 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     /* USER CODE BEGIN TIM5_MspInit 1 */
 
     /* USER CODE END TIM5_MspInit 1 */
+  }
+  else if(htim_base->Instance==TIM12)
+  {
+    /* USER CODE BEGIN TIM12_MspInit 0 */
+
+    /* USER CODE END TIM12_MspInit 0 */
+    /* Peripheral clock enable */
+    __HAL_RCC_TIM12_CLK_ENABLE();
+    /* USER CODE BEGIN TIM12_MspInit 1 */
+
+    /* USER CODE END TIM12_MspInit 1 */
   }
   else if(htim_base->Instance==TIM17)
   {
@@ -512,7 +538,6 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
     /* USER CODE BEGIN TIM1_MspPostInit 0 */
 
     /* USER CODE END TIM1_MspPostInit 0 */
-
     __HAL_RCC_GPIOE_CLK_ENABLE();
     /**TIM1 GPIO Configuration
     PE8     ------> TIM1_CH1N
@@ -521,9 +546,10 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
     PE11     ------> TIM1_CH2
     PE12     ------> TIM1_CH3N
     PE13     ------> TIM1_CH3
+    PE14     ------> TIM1_CH4
     */
     GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11
-                          |GPIO_PIN_12|GPIO_PIN_13;
+                          |GPIO_PIN_12|GPIO_PIN_13|LS3_MCU_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -533,6 +559,51 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
     /* USER CODE BEGIN TIM1_MspPostInit 1 */
 
     /* USER CODE END TIM1_MspPostInit 1 */
+  }
+  else if(htim->Instance==TIM3)
+  {
+    /* USER CODE BEGIN TIM3_MspPostInit 0 */
+
+    /* USER CODE END TIM3_MspPostInit 0 */
+
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    /**TIM3 GPIO Configuration
+    PC6     ------> TIM3_CH1
+    PC7     ------> TIM3_CH2
+    PC8     ------> TIM3_CH3
+    */
+    GPIO_InitStruct.Pin = LS6_MCU_Pin|LS5_MCU_Pin|LS4_MCU_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    /* USER CODE BEGIN TIM3_MspPostInit 1 */
+
+    /* USER CODE END TIM3_MspPostInit 1 */
+  }
+  else if(htim->Instance==TIM12)
+  {
+    /* USER CODE BEGIN TIM12_MspPostInit 0 */
+
+    /* USER CODE END TIM12_MspPostInit 0 */
+
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    /**TIM12 GPIO Configuration
+    PB14     ------> TIM12_CH1
+    PB15     ------> TIM12_CH2
+    */
+    GPIO_InitStruct.Pin = LS2_MCU_Pin|LS1_MCU_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Alternate = GPIO_AF2_TIM12;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    /* USER CODE BEGIN TIM12_MspPostInit 1 */
+
+    /* USER CODE END TIM12_MspPostInit 1 */
   }
 
 }
@@ -555,6 +626,17 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
 
     /* USER CODE END TIM1_MspDeInit 1 */
   }
+  else if(htim_base->Instance==TIM3)
+  {
+    /* USER CODE BEGIN TIM3_MspDeInit 0 */
+
+    /* USER CODE END TIM3_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_TIM3_CLK_DISABLE();
+    /* USER CODE BEGIN TIM3_MspDeInit 1 */
+
+    /* USER CODE END TIM3_MspDeInit 1 */
+  }
   else if(htim_base->Instance==TIM5)
   {
     /* USER CODE BEGIN TIM5_MspDeInit 0 */
@@ -573,6 +655,17 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
     /* USER CODE BEGIN TIM5_MspDeInit 1 */
 
     /* USER CODE END TIM5_MspDeInit 1 */
+  }
+  else if(htim_base->Instance==TIM12)
+  {
+    /* USER CODE BEGIN TIM12_MspDeInit 0 */
+
+    /* USER CODE END TIM12_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_TIM12_CLK_DISABLE();
+    /* USER CODE BEGIN TIM12_MspDeInit 1 */
+
+    /* USER CODE END TIM12_MspDeInit 1 */
   }
   else if(htim_base->Instance==TIM17)
   {

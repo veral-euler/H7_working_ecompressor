@@ -93,6 +93,24 @@ void Initial_Fault_Check(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LS_CURRENT_SENSE_MCU_Pin GPIO_PIN_2
+#define LS_CURRENT_SENSE_MCU_GPIO_Port GPIOA
+#define HEATER_TEMP_SENSE_MCU_Pin GPIO_PIN_7
+#define HEATER_TEMP_SENSE_MCU_GPIO_Port GPIOA
+#define PCB_TEMP_SENSE_MCU_Pin GPIO_PIN_5
+#define PCB_TEMP_SENSE_MCU_GPIO_Port GPIOC
+#define LS3_MCU_Pin GPIO_PIN_14
+#define LS3_MCU_GPIO_Port GPIOE
+#define LS2_MCU_Pin GPIO_PIN_14
+#define LS2_MCU_GPIO_Port GPIOB
+#define LS1_MCU_Pin GPIO_PIN_15
+#define LS1_MCU_GPIO_Port GPIOB
+#define LS6_MCU_Pin GPIO_PIN_6
+#define LS6_MCU_GPIO_Port GPIOC
+#define LS5_MCU_Pin GPIO_PIN_7
+#define LS5_MCU_GPIO_Port GPIOC
+#define LS4_MCU_Pin GPIO_PIN_8
+#define LS4_MCU_GPIO_Port GPIOC
 
 /* USER CODE BEGIN Private defines */
 typedef struct FOC {

@@ -48,7 +48,9 @@ FDCAN_HandleTypeDef hfdcan2;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim5;
+TIM_HandleTypeDef htim12;
 TIM_HandleTypeDef htim17;
 
 /* USER CODE BEGIN PV */
@@ -93,6 +95,8 @@ static void MX_ADC1_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_ADC2_Init(void);
+static void MX_TIM3_Init(void);
+static void MX_TIM12_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -142,7 +146,8 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM5_Init();
   MX_ADC2_Init();
-  volatile uint32_t lastTick = 0;
+  MX_TIM3_Init();
+  MX_TIM12_Init();
   /* USER CODE BEGIN 2 */
   (void)memset(&FOC_F_T, 0, sizeof(FOC_Flag_T));
   (void)memset(&FOC_U, 0, sizeof(ExtU_FOC_T));
@@ -162,9 +167,27 @@ int main(void)
   if(HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) Error_Handler();
   if(HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) Error_Handler();
 
+
+  //solar start
+  if(HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1) != HAL_OK) Error_Handler();
+  if(HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2) != HAL_OK) Error_Handler();
+  if(HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4) != HAL_OK) Error_Handler();
+
+  if(HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3) != HAL_OK) Error_Handler();
+  if(HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2) != HAL_OK) Error_Handler();
+  if(HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1) != HAL_OK) Error_Handler();
+  //solar end
+
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,1250);
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,1250);
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,1250);
+
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,1250);
+  __HAL_TIM_SET_COMPARE(&htim12,TIM_CHANNEL_2,1250);
+  __HAL_TIM_SET_COMPARE(&htim12,TIM_CHANNEL_1,1250);
+  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,1250);
+  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_2,1250);
+  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_3,1250);
   /**************************************************************/
 
   /**************************************************************/
@@ -797,6 +820,10 @@ static void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  {
+    Error_Handler();
+  }
   sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_ENABLE;
   sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_ENABLE;
   sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
@@ -865,6 +892,73 @@ static void MX_TIM2_Init(void)
   /* USER CODE BEGIN TIM2_Init 2 */
 
   /* USER CODE END TIM2_Init 2 */
+
+}
+
+/**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 4;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 2499;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
 
 }
 
@@ -940,6 +1034,69 @@ static void MX_TIM5_Init(void)
   HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_1);
   HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_2);
   /* USER CODE END TIM5_Init 2 */
+
+}
+
+/**
+  * @brief TIM12 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM12_Init(void)
+{
+
+  /* USER CODE BEGIN TIM12_Init 0 */
+
+  /* USER CODE END TIM12_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM12_Init 1 */
+
+  /* USER CODE END TIM12_Init 1 */
+  htim12.Instance = TIM12;
+  htim12.Init.Prescaler = 4;
+  htim12.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim12.Init.Period = 2499;
+  htim12.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim12.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim12) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim12, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim12) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim12, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim12, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim12, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM12_Init 2 */
+
+  /* USER CODE END TIM12_Init 2 */
+  HAL_TIM_MspPostInit(&htim12);
 
 }
 
@@ -1422,6 +1579,61 @@ void Regen_Init(void)
       /* low_speed_release_rpm     */ 200.0f,
       /* forward_only              */ 1u);
 }
+//
+//void setDuty(TIM_HandleTypeDef *htim, uint32_t Channel, uint8_t duty_percent)
+//{
+//    duty_percent = convertToActualDuty(duty_percent);
+//    uint32_t period = __HAL_TIM_GET_AUTORELOAD(htim); // Get ARR value
+//    uint32_t compare = (duty_percent * period) / 100;
+//
+//    __HAL_TIM_SET_COMPARE(htim, Channel, compare);
+//}
+//
+///* function to convert the duty cycle to actual value */
+//uint8_t convertToActualDuty(uint8_t dutyCycle)
+//{
+//    if(dutyCycle > 100)
+//    {
+//      dutyCycle = 100;
+//    }
+//    return (100 - dutyCycle);
+//}
+//// solar functions
+//void RequestedPower(uint8_t requestedEfficiency)
+//{
+//    uint8_t h1Duty, h2Duty, h3Duty = 0;
+//    uint16_t targetPower = 0;
+//
+//    if(requestedEfficiency > 100){
+//        requestedEfficiency = 100;
+//    }
+//    targetPower = (requestedEfficiency * 1200) / 100; // heater rated is 1200W -> 10% -> (10*1200)/100 => 120W
+//
+//    if(targetPower <= 300){
+//        h1Duty = 0;
+//        h2Duty = targetPower*100/300;
+//        h3Duty = 0;
+//        system.activeDuty = h2Duty;
+//    }
+//    else if(targetPower > 300 && targetPower <= 740){
+//        h1Duty = 0;
+//        h2Duty = 100;
+//        h3Duty = (targetPower-300)*100/440;
+//        system.activeDuty = h3Duty;
+//    }
+//    else if(targetPower > 740 && targetPower <= 1250){
+//		h1Duty = (targetPower - 740) * 100 / 530;
+//		h2Duty = 100;
+//		h3Duty = 100;
+//        system.activeDuty = h1Duty;
+//	}
+//
+//    // after the above calculation we will get the duty for each heater
+//    setDuty(&htim1, TIM_CHANNEL_1, h1Duty);
+//    setDuty(&htim1, TIM_CHANNEL_2, h2Duty);
+//    setDuty(&htim1, TIM_CHANNEL_3, h3Duty);
+//}
+//solar functions ends
 /* USER CODE END 4 */
 
 /**
